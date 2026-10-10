@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "Discord Token Extension",
+  "version": "1.0.0",
+  "description": "Paste your own Discord account token to sign in on the current tab.",
+  "permissions": [
+    "scripting",
+    "storage",
+    "activeTab",
+    "alarms",
+    "clipboardRead",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "https://discord.com/*"
+  ],
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://discord.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Discord Token Login"
+  },
+  "icons": {
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "discord-token-login@local",
+      "strict_min_version": "109.0"
+    }
+  }
+}
