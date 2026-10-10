@@ -35,8 +35,8 @@
     "default_title": "Discord Token Login"
   },
   "icons": {
-    "48": "icon48.png",
-    "128": "icon128.png"
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
   },
   "browser_specific_settings": {
     "gecko": {
