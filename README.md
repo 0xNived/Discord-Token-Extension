@@ -2,6 +2,13 @@
 
 Chrome/Firefox extension to paste your own Discord token and sign in on the current tab, or extract the token from an open Discord tab.
 
+![Preview](assets/popup-preview.png)
+
+> [!IMPORTANT]
+> **Keep your token private. Do not share it. Anyone with your token can access your account.**
+
+This exists only to make extracting and reusing **your own** token convenient.
+
 ## Features
 
 | Feature | Description |
@@ -17,9 +24,3 @@ Chrome/Firefox extension to paste your own Discord token and sign in on the curr
 
 1. Open `about:debugging#/runtime/this-firefox` (Firefox) or `chrome://extensions` (Chrome)
 2. Load Temporary / Load unpacked → select this folder
-
-## Disclaimer
-
-This exists only to make extracting and reusing **your own** token convenient.
-
-> <span style="color:red"><b>Keep your token private. Do not share it. Anyone with your token can access your account.</b></span>
