@@ -238,14 +238,25 @@
     #status {
       min-height: 16px;
       margin-top: 10px;
+      padding: 0;
       font-size: 12px;
+      font-weight: 600;
       line-height: 1.4;
+      text-align: center;
+      border-radius: 6px;
+    }
+    #status:not(:empty) {
+      padding: 6px 8px;
     }
     #status.ok {
       color: #23a55a;
+      background: rgba(35, 165, 90, 0.1);
+      border: 1px solid rgba(35, 165, 90, 0.3);
     }
     #status.err {
       color: #f23f43;
+      background: rgba(242, 63, 67, 0.1);
+      border: 1px solid rgba(242, 63, 67, 0.3);
     }
     #status:empty {
       display: none;
