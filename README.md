@@ -23,4 +23,4 @@ This exists only to make extracting and reusing **your own** token convenient.
 ## Install
 
 1. Open `about:debugging#/runtime/this-firefox` (Firefox) or `chrome://extensions` (Chrome)
-2. Load Temporary / Load unpacked → select this folder
+2. Load Temporary / Load unpacked → select `firefox-build` or `chrome-build`

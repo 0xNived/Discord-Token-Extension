@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Discord Token Login</title>
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    [hidden] {
+      display: none !important;
+    }
+    body {
+      width: 320px;
+      margin: 0;
+      padding: 16px;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: #313338;
+      color: #dbdee1;
+    }
+    .notice {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 12px;
+      padding: 7px 8px;
+      font-size: 11px;
+      color: #f0b232;
+      background: rgba(240, 178, 50, 0.08);
+      border: 1px solid rgba(240, 178, 50, 0.25);
+      border-radius: 6px;
+    }
+    .notice span {
+      flex: 1;
+      line-height: 1.4;
+    }
+    .notice .pin,
+    .notice .dismiss {
+      display: flex;
+      padding: 0;
+      background: transparent;
+      color: #f0b232;
+    }
+    .notice .dismiss {
+      font-size: 15px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .notice .dismiss:hover {
+      color: #ffd67a;
+    }
+    .logo {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+    .source-link {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      display: flex;
+      padding: 5px;
+      color: #949ba4;
+      border-radius: 4px;
+      transform: translateY(-50%);
+    }
+    .source-link:hover {
+      color: #f2f3f5;
+      background: #1e1f22;
+    }
+    .tabs {
+      display: flex;
+      gap: 3px;
+      padding: 3px;
+      margin-bottom: 12px;
+      background: #1e1f22;
+      border-radius: 6px;
+    }
+    .tab {
+      flex: 1;
+      padding: 5px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #949ba4;
+      background: transparent;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .tab:hover {
+      color: #dbdee1;
+    }
+    .tab.active {
+      background: #5865f2;
+      color: #fff;
+    }
+    .tab-panel[hidden] {
+      display: none;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #b5bac1;
+      margin-bottom: 6px;
+    }
+    input[type="password"],
+    input[type="text"] {
+      width: 100%;
+      padding: 9px 10px;
+      font-size: 13px;
+      font-family: ui-monospace, Consolas, monospace;
+      color: #f2f3f5;
+      background: #1e1f22;
+      border: 1px solid #1e1f22;
+      border-radius: 6px;
+      outline: none;
+    }
+    /* Use a text field with visual masking so browsers do not add another eye. */
+    .masked-token {
+      -webkit-text-security: disc;
+    }
+    input:focus {
+      border-color: #5865f2;
+    }
+    input[readonly] {
+      color: #949ba4;
+    }
+    .input-wrap {
+      position: relative;
+    }
+    .input-wrap input {
+      padding-right: 60px;
+    }
+    #currentToken {
+      padding-right: 38px;
+    }
+    .icon-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      padding: 4px;
+      background: transparent;
+      color: #949ba4;
+      border-radius: 4px;
+    }
+    .icon-btn:hover {
+      color: #f2f3f5;
+    }
+    #paste {
+      right: 32px;
+    }
+    #eye,
+    #eye-current {
+      right: 6px;
+    }
+    .advanced {
+      margin-top: 10px;
+      padding: 0 10px;
+      background: #1e1f22;
+      border-radius: 6px;
+    }
+    .advanced summary {
+      padding: 8px 0;
+      font-size: 12px;
+      font-weight: 600;
+      color: #949ba4;
+      cursor: pointer;
+      list-style: none;
+      user-select: none;
+    }
+    .advanced summary::-webkit-details-marker {
+      display: none;
+    }
+    .advanced summary::after {
+      content: "▾";
+      float: right;
+      color: #6d6f78;
+    }
+    .advanced[open] summary::after {
+      content: "▴";
+    }
+    .advanced summary:hover {
+      color: #dbdee1;
+    }
+    .adv-body {
+      padding-bottom: 10px;
+    }
+    .adv-body .row:first-child {
+      margin-top: 0;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #949ba4;
+    }
+    .row input[type="checkbox"] {
+      accent-color: #5865f2;
+    }
+    .row label {
+      margin: 0;
+      font-weight: 400;
+      color: #949ba4;
+    }
+    .spacer {
+      flex: 1;
+    }
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    button {
+      padding: 9px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    button:disabled {
+      background: #2b2d31;
+      color: #6d6f78;
+      cursor: not-allowed;
+    }
+    .primary {
+      flex: 1;
+      background: #5865f2;
+      color: #fff;
+    }
+    .primary:hover:not(:disabled) {
+      background: #4752c4;
+    }
+    .secondary {
+      flex: 1;
+      background: #4e5058;
+      color: #dbdee1;
+    }
+    .secondary:hover:not(:disabled) {
+      background: #5c5e66;
+    }
+    #status {
+      min-height: 16px;
+      margin-top: 10px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    #status.ok {
+      color: #23a55a;
+    }
+    #status.err {
+      color: #f23f43;
+    }
+    #status:empty {
+      display: none;
+    }
+    .source-footer {
+      display: flex;
+      justify-content: center;
+      margin-top: 5px;
+    }
+    .source-footer a {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 6px;
+      font-size: 11px;
+      color: #949ba4;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+    .source-footer a:hover {
+      color: #f2f3f5;
+      background: #1e1f22;
+    }
+  </style>
+</head>
+<body>
+  <div id="notice" class="notice">
+    <svg class="pin" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 17v5" />
+      <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z" />
+    </svg>
+    <span>Keep your token private.</span>
+    <button id="dismiss" class="dismiss" title="Dismiss">&times;</button>
+  </div>
+
+  <div class="logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="44" height="44" fill="#949ba4" role="img" aria-label="Discord">
+      <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" />
+    </svg>
+    <a class="source-link" href="https://github.com/0xNived/Discord-Token-Extension" target="_blank" rel="noreferrer" title="View source on GitHub" aria-label="View source on GitHub">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 2C6.48 2 2 6.58 2 12.23c0 4.52 2.87 8.35 6.84 9.71.5.1.68-.22.68-.49 0-.24-.01-1.04-.01-1.88-2.78.62-3.37-1.21-3.37-1.21-.45-1.19-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .08 1.53 1.06 1.53 1.06.9 1.57 2.35 1.12 2.92.85.09-.67.35-1.12.64-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.73 0 0 .84-.28 2.75 1.05A9.3 9.3 0 0 1 12 6.94c.85 0 1.7.12 2.5.35 1.91-1.33 2.75-1.05 2.75-1.05.55 1.42.2 2.47.1 2.73.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.24 10.24 0 0 0 22 12.23C22 6.58 17.52 2 12 2z" />
+      </svg>
+    </a>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="login">Login</button>
+    <button class="tab" data-tab="extract">Extract</button>
+  </div>
+
+  <section id="login-tab" class="tab-panel">
+    <label for="token">Account token</label>
+    <div class="input-wrap">
+      <input id="token" class="masked-token" type="text" placeholder="Paste your token" autocomplete="off" spellcheck="false" />
+      <button id="paste" class="icon-btn" type="button" title="Paste from clipboard">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+          <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+        </svg>
+      </button>
+      <button id="eye" class="icon-btn" type="button" title="Show or hide token">
+        <svg id="eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+        <svg id="eye-slash" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden>
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+          <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+          <line x1="1" y1="1" x2="23" y2="23" />
+        </svg>
+      </button>
+    </div>
+    <div class="actions">
+      <button id="login" class="primary">Login</button>
+    </div>
+    <details class="advanced">
+      <summary>Advanced</summary>
+      <div class="adv-body">
+        <div class="row">
+          <input id="clearOnClose" type="checkbox" />
+          <label for="clearOnClose">Clear token after Discord tab is closed</label>
+        </div>
+        <div class="row">
+          <input id="autoClearClip" type="checkbox" />
+          <label for="autoClearClip">Auto-clear clipboard after copy</label>
+        </div>
+        <div class="row">
+          <input id="openDiscord" type="checkbox" />
+          <label for="openDiscord">Open Discord before login</label>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <section id="extract-tab" class="tab-panel" hidden>
+    <label for="currentToken" style="margin-top: 0;">Current token</label>
+    <div class="input-wrap">
+      <input id="currentToken" class="masked-token" type="text" readonly placeholder="No token found" autocomplete="off" spellcheck="false" />
+      <button id="eye-current" class="icon-btn" type="button" title="Show or hide token">
+        <svg id="eye-current-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+        <svg id="eye-current-slash" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden>
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+          <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+          <line x1="1" y1="1" x2="23" y2="23" />
+        </svg>
+      </button>
+    </div>
+    <div class="actions">
+      <button id="copy" class="secondary" disabled>Copy</button>
+    </div>
+  </section>
+
+  <div id="status"></div>
+  <div class="source-footer">
+    <a href="https://github.com/0xNived/Discord-Token-Extension" target="_blank" rel="noreferrer" title="View source on GitHub">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 2C6.48 2 2 6.58 2 12.23c0 4.52 2.87 8.35 6.84 9.71.5.1.68-.22.68-.49 0-.24-.01-1.04-.01-1.88-2.78.62-3.37-1.21-3.37-1.21-.45-1.19-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .08 1.53 1.06 1.53 1.06.9 1.57 2.35 1.12 2.92.85.09-.67.35-1.12.64-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.73 0 0 .84-.28 2.75 1.05A9.3 9.3 0 0 1 12 6.94c.85 0 1.7.12 2.5.35 1.91-1.33 2.75-1.05 2.75-1.05.55 1.42.2 2.47.1 2.73.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.24 10.24 0 0 0 22 12.23C22 6.58 17.52 2 12 2z" />
+      </svg>
+      Open source
+    </a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
